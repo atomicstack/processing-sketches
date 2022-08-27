@@ -35,7 +35,7 @@ void setup() {
 
   result = new int[width*height][3];
   // frameRate(5);
-  frameRate(60);
+  frameRate(120);
 }
 
 // void update() {
@@ -48,7 +48,15 @@ void _draw() {
   // stroke(0);
   // strokeWeight(1);
 
+  int threshold = 360 - TRANSITION_SIZE;
   int thisFrame = frameCount + FRAME_OFFSET;
+  int altFrame = thisFrame + 180;
+  float thisRadians = radians(thisFrame);
+  float altRadians = radians(altFrame);
+  int thisFrameModulus = thisFrame % 360;
+  int colorModulus = altFrame % 360;
+  int fillValue = thisFrameModulus - TRANSITION_SIZE;
+  int altFillValue = colorModulus - TRANSITION_SIZE;
 
   for (int i = 0; i < ROW_SIZE; i++) {
     for (int j = 0; j < ROW_SIZE; j++) {
@@ -60,11 +68,10 @@ void _draw() {
 
         pushMatrix();
         translate(xLocation, yLocation);
-        rotate(radians(thisFrame));
+        rotate(thisRadians);
         rotate(radians(k * 10));
 
-        int thisFrameModulus = thisFrame % 360;
-        float thisSquareSize = map(sin(radians(thisFrame)), -1, 1, SQUARE_SIZE * 0.4, SQUARE_SIZE);
+        float thisSquareSize = map(sin(thisRadians), -1, 1, SQUARE_SIZE * 0.4, SQUARE_SIZE);
         color fillColor;
         color strokeColor;
         if (thisFrameModulus <= TRANSITION_SIZE) {
@@ -74,16 +81,14 @@ void _draw() {
           fillColor = color(0, lerpDistance, 100, percentDone);
           strokeColor = fillColor;
         }
-        else if (thisFrameModulus > ( 360 - TRANSITION_SIZE ) ) {
+        else if (thisFrameModulus > threshold ) {
           int fadeOutDistance = 360 - thisFrameModulus;
           float lerpDistance = map(fadeOutDistance, 1, TRANSITION_SIZE, 0, 100);
 
-          fillColor = color(360 - TRANSITION_SIZE*2, lerpDistance, 100, percentDone);
+          fillColor = color(threshold*2, lerpDistance, 100, percentDone);
           strokeColor = fillColor;
         }
         else {
-          int fillValue = thisFrameModulus - TRANSITION_SIZE;
-
           fillColor = color(fillValue, 100, 100, percentDone);
           strokeColor = fillColor;
         }
@@ -105,12 +110,10 @@ void _draw() {
 
         pushMatrix();
         translate(xLocation, yLocation);
-        rotate(radians(thisFrame));
+        rotate(thisRadians);
         rotate(radians(k * 10));
 
-        int thisFrameModulus = thisFrame % 360;
-        int colorModulus = ( thisFrame + 180 ) % 360;
-        float thisSquareSize = map(sin(radians(thisFrame+180)), -1, 1, SQUARE_SIZE * 0.4, SQUARE_SIZE);
+        float thisSquareSize = map(sin(radians(altFrame)), -1, 1, SQUARE_SIZE * 0.4, SQUARE_SIZE);
         color fillColor;
         color strokeColor;
         if (colorModulus <= TRANSITION_SIZE) {
@@ -119,15 +122,14 @@ void _draw() {
           fillColor = color(0, lerpDistance, 100, percentDone);
           strokeColor = fillColor;
         }
-        else if (colorModulus > ( 360 - TRANSITION_SIZE ) ) {
+        else if (colorModulus > threshold ) {
           int fadeOutDistance = 360 - colorModulus;
           float lerpDistance = map(fadeOutDistance, 1, TRANSITION_SIZE, 0, 100);
-          fillColor = color(360 - TRANSITION_SIZE*2, lerpDistance, 100, percentDone);
+          fillColor = color(threshold*2, lerpDistance, 100, percentDone);
           strokeColor = fillColor;
         }
         else {
-          int fillValue = colorModulus - TRANSITION_SIZE;
-          fillColor = color(fillValue, 100, 100, percentDone);
+          fillColor = color(altFillValue, 100, 100, percentDone);
           strokeColor = fillColor;
         }
         fill(fillColor);
